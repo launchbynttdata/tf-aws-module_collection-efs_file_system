@@ -41,7 +41,7 @@ locals {
 
   # Filter based on enabled_subnet_indices if provided
   # This allows for testing scenarios where we add/remove mount targets
-  enabled_mount_targets = var.enabled_subnet_indices != null && length(var.enabled_subnet_indices) > 0 ? {
+  enabled_mount_targets = (var.enabled_subnet_indices != null && length(var.enabled_subnet_indices) > 0) ? {
     for idx in var.enabled_subnet_indices :
     "az-${local.subnet_configs_with_full_az[idx].az_letter}" => local.all_mount_targets["az-${local.subnet_configs_with_full_az[idx].az_letter}"]
   } : local.all_mount_targets

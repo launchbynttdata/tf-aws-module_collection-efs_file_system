@@ -150,7 +150,6 @@ terraform destroy -var-file=test.tfvars
 | <a name="input_resource_name"></a> [resource\_name](#input\_resource\_name) | Name for example resources | `string` | n/a | yes |
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment name | `string` | n/a | yes |
 | <a name="input_vpc_cidr_block"></a> [vpc\_cidr\_block](#input\_vpc\_cidr\_block) | CIDR for example VPC | `string` | n/a | yes |
-| <a name="input_subnet_count"></a> [subnet\_count](#input\_subnet\_count) | Number of subnets to create (typically 2-3 for high availability) | `number` | n/a | yes |
 | <a name="input_encrypted"></a> [encrypted](#input\_encrypted) | Whether to encrypt the EFS file system | `bool` | `true` | no |
 | <a name="input_performance_mode"></a> [performance\_mode](#input\_performance\_mode) | Performance mode for the file system | `string` | `"generalPurpose"` | no |
 | <a name="input_throughput_mode"></a> [throughput\_mode](#input\_throughput\_mode) | Throughput mode for the file system | `string` | `"bursting"` | no |

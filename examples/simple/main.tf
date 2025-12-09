@@ -30,16 +30,14 @@ resource "aws_vpc" "example" {
   }
 }
 
-# Subnets across multiple AZs for high availability
+# Single subnet for minimal example
 resource "aws_subnet" "example" {
-  count = var.subnet_count
-
   vpc_id            = aws_vpc.example.id
-  cidr_block        = cidrsubnet(var.vpc_cidr_block, 8, count.index)
-  availability_zone = data.aws_availability_zones.available.names[count.index % length(data.aws_availability_zones.available.names)]
+  cidr_block        = cidrsubnet(var.vpc_cidr_block, 8, 0)
+  availability_zone = data.aws_availability_zones.available.names[0]
 
   tags = {
-    Name = "${var.resource_name}-subnet-${count.index + 1}"
+    Name = "${var.resource_name}-subnet"
   }
 }
 
@@ -88,9 +86,9 @@ module "efs" {
 
   # Mount target configuration
   create_mount_targets = true
-  # Create a map with static keys for mount targets
+  # Single mount target for simple example
   mount_target_subnet_ids = {
-    for idx, subnet in aws_subnet.example : "subnet-${idx + 1}" => subnet.id
+    "primary" = aws_subnet.example.id
   }
   mount_target_security_group_ids = [aws_security_group.efs_mount_target.id]
 

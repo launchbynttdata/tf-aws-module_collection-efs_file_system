@@ -28,10 +28,7 @@ variable "vpc_cidr_block" {
   type        = string
 }
 
-variable "subnet_count" {
-  description = "Number of subnets to create (typically 2-3 for high availability)"
-  type        = number
-}
+
 
 # EFS File System Variables
 variable "encrypted" {

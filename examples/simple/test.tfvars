@@ -1,10 +1,9 @@
-region        = "us-west-2"
+# region        = "us-west-2" # not used in this example
 resource_name = "efs-test"
 environment   = "dev"
 
 # VPC Configuration
 vpc_cidr_block = "10.0.0.0/16"
-subnet_count   = 2
 
 # EFS Configuration
 encrypted        = true

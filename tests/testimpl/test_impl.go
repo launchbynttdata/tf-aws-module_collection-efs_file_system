@@ -62,21 +62,13 @@ func TestComposableEFSCollectionComplete(t *testing.T, ctx testTypes.TestContext
 	})
 }
 
-// TestComposableEFSCollectionSimple validates the simple example with plan-only (no actual deployment).
-// This test validates that the configuration is valid and would deploy successfully.
+// TestComposableEFSCollectionSimple validates the simple example with actual deployment.
+// This test validates that the minimal configuration deploys successfully with a single mount target.
 func TestComposableEFSCollectionSimple(t *testing.T, ctx testTypes.TestContext) {
-	t.Run("ValidateSimpleExamplePlan", func(t *testing.T) {
-		t.Log("Validating simple example plan without deployment")
-
-		// Run terraform plan
-		terraformOptions := ctx.TerratestTerraformOptions()
-		terraform.Init(t, terraformOptions)
-		planExitCode := terraform.PlanExitCode(t, terraformOptions)
-
-		// Plan should succeed with exit code 0 (no changes after init) or 2 (changes to apply)
-		assert.Contains(t, []int{0, 2}, planExitCode, "Plan should succeed")
-
-		t.Log("Simple example plan validation successful")
+	t.Run("DeploySimpleExample", func(t *testing.T) {
+		t.Log("Deploying simple EFS example with single mount target")
+		// Simple example has a single mount target with key "primary"
+		validateEFSDeployment(t, ctx, 1, []string{"primary"})
 	})
 }
 
@@ -134,6 +126,21 @@ func validateEFSDeployment(t *testing.T, ctx testTypes.TestContext, expectedMoun
 		t.Run("TestFileSystemName", func(t *testing.T) {
 			assert.NotEmpty(t, fileSystemName, "File system name should not be empty")
 		})
+
+		t.Run("TestFileSystemCreationToken", func(t *testing.T) {
+			fileSystemCreationToken := terraform.Output(t, ctx.TerratestTerraformOptions(), "file_system_creation_token")
+			assert.NotEmpty(t, fileSystemCreationToken, "File system creation token should not be empty")
+		})
+
+		t.Run("TestFileSystemAvailabilityZone", func(t *testing.T) {
+			// These may be empty for Multi-AZ, but should be retrievable
+			fileSystemAZID := terraform.Output(t, ctx.TerratestTerraformOptions(), "file_system_availability_zone_id")
+			fileSystemAZName := terraform.Output(t, ctx.TerratestTerraformOptions(), "file_system_availability_zone_name")
+			// For One Zone storage, these should not be empty
+			// For Multi-AZ, they will be empty strings
+			_ = fileSystemAZID   // May be empty for Multi-AZ
+			_ = fileSystemAZName // May be empty for Multi-AZ
+		})
 	})
 
 	// ========================================
@@ -161,6 +168,70 @@ func validateEFSDeployment(t *testing.T, ctx testTypes.TestContext, expectedMoun
 			for mountTargetName, dnsName := range mountTargetDNSNames {
 				assert.NotEmpty(t, dnsName, "Mount target DNS name for %s should not be empty", mountTargetName)
 				assert.Contains(t, dnsName, fileSystemID, "DNS name should contain file system ID")
+			}
+		})
+
+		t.Run("TestMountTargetAZDNSNames", func(t *testing.T) {
+			mountTargetAZDNSNames := terraform.OutputMap(t, ctx.TerratestTerraformOptions(), "mount_target_az_dns_names")
+			assert.NotEmpty(t, mountTargetAZDNSNames, "Mount target AZ DNS names map should not be empty")
+			assert.Equal(t, expectedMountTargets, len(mountTargetAZDNSNames),
+				"Should have exactly %d mount target AZ DNS names", expectedMountTargets)
+
+			for mountTargetName, azDnsName := range mountTargetAZDNSNames {
+				assert.NotEmpty(t, azDnsName, "Mount target AZ DNS name for %s should not be empty", mountTargetName)
+				assert.Contains(t, azDnsName, fileSystemID, "AZ DNS name should contain file system ID")
+			}
+		})
+
+		t.Run("TestMountTargetNetworkInterfaces", func(t *testing.T) {
+			mountTargetNIIDs := terraform.OutputMap(t, ctx.TerratestTerraformOptions(), "mount_target_network_interface_ids")
+			assert.NotEmpty(t, mountTargetNIIDs, "Mount target network interface IDs should not be empty")
+			assert.Equal(t, expectedMountTargets, len(mountTargetNIIDs),
+				"Should have exactly %d network interface IDs", expectedMountTargets)
+
+			for mountTargetName, niID := range mountTargetNIIDs {
+				assert.NotEmpty(t, niID, "Network interface ID for %s should not be empty", mountTargetName)
+				assert.Regexp(t, "^eni-[a-f0-9]+$", niID, "Network interface ID should match pattern eni-xxxxxxxx")
+			}
+		})
+
+		t.Run("TestMountTargetAvailabilityZones", func(t *testing.T) {
+			mountTargetAZNames := terraform.OutputMap(t, ctx.TerratestTerraformOptions(), "mount_target_availability_zone_names")
+			assert.NotEmpty(t, mountTargetAZNames, "Mount target AZ names should not be empty")
+			assert.Equal(t, expectedMountTargets, len(mountTargetAZNames),
+				"Should have exactly %d AZ names", expectedMountTargets)
+
+			mountTargetAZIDs := terraform.OutputMap(t, ctx.TerratestTerraformOptions(), "mount_target_availability_zone_ids")
+			assert.NotEmpty(t, mountTargetAZIDs, "Mount target AZ IDs should not be empty")
+			assert.Equal(t, expectedMountTargets, len(mountTargetAZIDs),
+				"Should have exactly %d AZ IDs", expectedMountTargets)
+
+			for mountTargetName := range mountTargetAZNames {
+				assert.NotEmpty(t, mountTargetAZNames[mountTargetName], "AZ name for %s should not be empty", mountTargetName)
+				assert.NotEmpty(t, mountTargetAZIDs[mountTargetName], "AZ ID for %s should not be empty", mountTargetName)
+			}
+		})
+
+		t.Run("TestMountTargetFileSystemARNs", func(t *testing.T) {
+			mountTargetFSARNs := terraform.OutputMap(t, ctx.TerratestTerraformOptions(), "mount_target_file_system_arns")
+			assert.NotEmpty(t, mountTargetFSARNs, "Mount target file system ARNs should not be empty")
+			assert.Equal(t, expectedMountTargets, len(mountTargetFSARNs),
+				"Should have exactly %d file system ARNs", expectedMountTargets)
+
+			for mountTargetName, fsArn := range mountTargetFSARNs {
+				assert.Equal(t, fileSystemARN, fsArn, "File system ARN for %s should match", mountTargetName)
+			}
+		})
+
+		t.Run("TestMountTargetOwnerIDs", func(t *testing.T) {
+			mountTargetOwnerIDs := terraform.OutputMap(t, ctx.TerratestTerraformOptions(), "mount_target_owner_ids")
+			assert.NotEmpty(t, mountTargetOwnerIDs, "Mount target owner IDs should not be empty")
+			assert.Equal(t, expectedMountTargets, len(mountTargetOwnerIDs),
+				"Should have exactly %d owner IDs", expectedMountTargets)
+
+			for mountTargetName, ownerID := range mountTargetOwnerIDs {
+				assert.NotEmpty(t, ownerID, "Owner ID for %s should not be empty", mountTargetName)
+				assert.Regexp(t, "^[0-9]{12}$", ownerID, "Owner ID should be a 12-digit AWS account ID")
 			}
 		})
 
@@ -202,6 +273,48 @@ func validateEFSDeployment(t *testing.T, ctx testTypes.TestContext, expectedMoun
 			}
 		})
 
+		t.Run("TestAccessPointFileSystemIDs", func(t *testing.T) {
+			accessPointFSIDs := terraform.OutputMap(t, ctx.TerratestTerraformOptions(), "access_point_file_system_ids")
+			assert.NotEmpty(t, accessPointFSIDs, "Access point file system IDs should not be empty")
+			for name, fsID := range accessPointFSIDs {
+				assert.Equal(t, fileSystemID, fsID, "File system ID for access point %s should match", name)
+			}
+		})
+
+		t.Run("TestAccessPointOwnerIDs", func(t *testing.T) {
+			accessPointOwnerIDs := terraform.OutputMap(t, ctx.TerratestTerraformOptions(), "access_point_owner_ids")
+			assert.NotEmpty(t, accessPointOwnerIDs, "Access point owner IDs should not be empty")
+			for name, ownerID := range accessPointOwnerIDs {
+				assert.NotEmpty(t, ownerID, "Owner ID for access point %s should not be empty", name)
+				assert.Regexp(t, "^[0-9]{12}$", ownerID, "Owner ID should be a 12-digit AWS account ID")
+			}
+		})
+
+		t.Run("TestAccessPointPOSIXUsers", func(t *testing.T) {
+			// POSIX user configuration is a complex object, so we just validate it exists
+			// The actual validation of POSIX user details happens in AWS SDK validation
+			accessPointPOSIXUsers := terraform.OutputMap(t, ctx.TerratestTerraformOptions(), "access_point_posix_users")
+			assert.NotEmpty(t, accessPointPOSIXUsers, "Access point POSIX users should not be empty")
+			for name := range accessPointPOSIXUsers {
+				assert.NotEmpty(t, accessPointPOSIXUsers[name], "POSIX user for access point %s should not be empty", name)
+			}
+		})
+
+		t.Run("TestAccessPointRootDirectories", func(t *testing.T) {
+			// Root directory configuration is a complex object, so we just validate it exists
+			accessPointRootDirs := terraform.OutputMap(t, ctx.TerratestTerraformOptions(), "access_point_root_directories")
+			assert.NotEmpty(t, accessPointRootDirs, "Access point root directories should not be empty")
+			for name := range accessPointRootDirs {
+				assert.NotEmpty(t, accessPointRootDirs[name], "Root directory for access point %s should not be empty", name)
+			}
+		})
+
+		t.Run("TestAccessPointTags", func(t *testing.T) {
+			// Tags are a map, so we just validate the output exists
+			accessPointTags := terraform.OutputMap(t, ctx.TerratestTerraformOptions(), "access_point_tags")
+			assert.NotEmpty(t, accessPointTags, "Access point tags should not be empty")
+		})
+
 		t.Run("TestAccessPointCount", func(t *testing.T) {
 			// Verify we have expected access points (simple example has 2, complete has 4)
 			assert.GreaterOrEqual(t, len(accessPointIDs), 1, "Should have at least one access point")
@@ -233,6 +346,33 @@ func validateEFSDeployment(t *testing.T, ctx testTypes.TestContext, expectedMoun
 			expectedCount := 1 + len(accessPointARNs)
 			assert.Equal(t, expectedCount, len(allResourceARNs),
 				"Total ARN count should be file system + access points")
+		})
+
+		t.Run("TestConnectionInfo", func(t *testing.T) {
+			connectionInfo := terraform.Output(t, ctx.TerratestTerraformOptions(), "connection_info")
+			assert.NotEmpty(t, connectionInfo, "Connection info should not be empty")
+			// Connection info is a complex object with file_system_id, dns_name, mount_target_dns, etc.
+			assert.Contains(t, connectionInfo, fileSystemID, "Connection info should contain file system ID")
+			assert.Contains(t, connectionInfo, fileSystemDNSName, "Connection info should contain DNS name")
+		})
+
+		t.Run("TestMountCommand", func(t *testing.T) {
+			mountCommand := terraform.Output(t, ctx.TerratestTerraformOptions(), "mount_command")
+			assert.NotEmpty(t, mountCommand, "Mount command should not be empty")
+			assert.Contains(t, mountCommand, fileSystemDNSName, "Mount command should contain DNS name")
+			assert.Contains(t, mountCommand, "mount", "Mount command should contain 'mount' keyword")
+		})
+
+		t.Run("TestMountCommandWithEFSUtils", func(t *testing.T) {
+			// This output may not exist in simple example, so check if it exists first
+			terraformOptions := ctx.TerratestTerraformOptions()
+			allOutputs := terraform.OutputAll(t, terraformOptions)
+			if _, exists := allOutputs["mount_command_with_efs_utils"]; exists {
+				mountCommandEFSUtils := terraform.Output(t, terraformOptions, "mount_command_with_efs_utils")
+				assert.NotEmpty(t, mountCommandEFSUtils, "Mount command with EFS utils should not be empty")
+				assert.Contains(t, mountCommandEFSUtils, fileSystemID, "Mount command should contain file system ID")
+				assert.Contains(t, mountCommandEFSUtils, "-t efs", "Mount command should specify EFS type")
+			}
 		})
 	})
 
