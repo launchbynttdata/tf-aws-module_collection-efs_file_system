@@ -17,15 +17,21 @@ import (
 
 	"github.com/launchbynttdata/lcaf-component-terratest/lib"
 	"github.com/launchbynttdata/lcaf-component-terratest/types"
-	"github.com/launchbynttdata/tf-aws-module_collection-efs_file_system/tests/testimpl"
+	"github.com/launchbynttdata/tf-aws-module_collection-efs/tests/testimpl"
 )
 
 const (
-	testConfigsExamplesFolderDefault = "../../examples"
+	testConfigsExamplesFolderDefault = "../../examples/complete"
 	infraTFVarFileNameDefault        = "test.tfvars"
 )
 
-func TestModule(t *testing.T) {
+// TestEFSCollectionModule tests the complete example with actual resource deployment
+// This test will:
+// 1. Deploy with all 3 subnets enabled (default)
+// 2. Update to remove subnet B (indices [0, 2])
+// 3. Update to remove subnet A and restore B (indices [1, 2])
+// 4. Destroy all resources
+func TestEFSCollectionModule(t *testing.T) {
 
 	ctx := types.CreateTestContextBuilder().
 		SetTestConfig(&testimpl.ThisTFModuleConfig{}).
@@ -33,5 +39,5 @@ func TestModule(t *testing.T) {
 		SetTestConfigFileName(infraTFVarFileNameDefault).
 		Build()
 
-	lib.RunSetupTestTeardown(t, *ctx, testimpl.TestComposableComplete)
+	lib.RunSetupTestTeardown(t, *ctx, testimpl.TestComposableEFSCollectionComplete)
 }

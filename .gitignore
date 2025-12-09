@@ -1,10 +1,11 @@
 terraform.*
+.terraform
 .repo/
 components/
 .semverbot.toml
 vendor/
 
-.idea
+*.idea
 !examples/*.tfvars
 
 # We don't want to commit the test run lock files
@@ -61,3 +62,7 @@ azure_env.sh
 
 # VS Code
 .vscode/
+.devcontainer
+
+# go tests
+*.test

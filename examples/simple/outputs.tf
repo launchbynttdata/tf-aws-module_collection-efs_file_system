@@ -10,17 +10,39 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-output "account_id" {
-  description = "AWS Account ID"
-  value       = module.hello.account_id
+# Outputs for the simple example
+
+output "file_system_id" {
+  description = "The ID of the EFS file system"
+  value       = module.efs.file_system_id
 }
 
-output "arn" {
-  description = "AWS Caller Identity ARN"
-  value       = module.hello.arn
+output "file_system_arn" {
+  description = "The ARN of the EFS file system"
+  value       = module.efs.file_system_arn
 }
 
-output "hello_message" {
-  description = "Hello message"
-  value       = module.hello.hello_message
+output "file_system_dns_name" {
+  description = "The DNS name for the EFS file system"
+  value       = module.efs.file_system_dns_name
+}
+
+output "mount_target_ids" {
+  description = "Map of subnet ID to mount target ID"
+  value       = module.efs.mount_target_ids
+}
+
+output "access_point_ids" {
+  description = "Map of access point names to their IDs"
+  value       = module.efs.access_point_ids
+}
+
+output "mount_command" {
+  description = "Command to mount the EFS file system"
+  value       = module.efs.mount_command
+}
+
+output "connection_info" {
+  description = "Connection information for the EFS file system"
+  value       = module.efs.connection_info
 }

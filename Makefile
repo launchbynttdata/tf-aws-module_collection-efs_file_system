@@ -168,35 +168,3 @@ secrets-baseline:
 	detect-secrets scan > .secrets.baseline
 	@echo "✅ Secrets baseline created successfully!"
 	@echo "Review .secrets.baseline to ensure no false positives are included."
-
-## update-tool-versions: Update .tool-versions with latest versions (respects pinned versions)
-update-tool-versions:
-	@echo "Updating .tool-versions with latest versions..."
-	@if [ ! -f .tool-versions ]; then \
-		@echo "Error: .tool-versions file not found"; \
-		exit 1; \
-	fi
-	@cp .tool-versions .tool-versions.backup
-	@while IFS= read -r line; do \
-		if echo "$$line" | grep -q "#pinned"; then \
-			echo "$$line" >> .tool-versions.tmp; \
-			echo "Keeping pinned: $$line"; \
-		else \
-			tool=$$(echo "$$line" | awk '{print $$1}'); \
-			if [ -n "$$tool" ] && [ "$$tool" != "#" ]; then \
-				latest=$$(asdf latest "$$tool" 2>/dev/null || echo "unknown"); \
-				if [ "$$latest" != "unknown" ] && ! echo "$$latest" | grep -q "unable to load\|does not have\|unknown"; then \
-					echo "$$tool $$latest" >> .tool-versions.tmp; \
-					echo "Updated $$tool to $$latest"; \
-				else \
-					echo "$$line" >> .tool-versions.tmp; \
-					echo "Keeping $$line (no update available)"; \
-				fi; \
-			else \
-				echo "$$line" >> .tool-versions.tmp; \
-			fi; \
-		fi; \
-	done < .tool-versions
-	@mv .tool-versions.tmp .tool-versions
-	@echo "Updated .tool-versions successfully!"
-	@echo "Run 'asdf install' to install updated versions"
