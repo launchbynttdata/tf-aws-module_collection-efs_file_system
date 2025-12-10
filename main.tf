@@ -13,7 +13,8 @@
 # The primary resource - creates the EFS file system
 
 module "efs_file_system" {
-  source = "github.com/launchbynttdata/tf-aws-module_primitive-efs_file_system?ref=2.0.0"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/efs_file_system/aws"
+  version = "~> 2.0"
 
   # File system configuration
   name                            = var.file_system_name != null ? var.file_system_name : local.file_system_name
@@ -46,7 +47,8 @@ module "efs_file_system" {
 # Each mount target is created in a separate subnet (typically one per AZ)
 
 module "efs_mount_target" {
-  source = "github.com/launchbynttdata/tf-aws-module_primitive-efs_mount_target?ref=1.0.0"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/efs_mount_target/aws"
+  version = "~> 1.0"
 
   # Create one mount target per subnet using for_each
   # Only create mount targets if enabled and subnets are provided
@@ -71,7 +73,8 @@ module "efs_mount_target" {
 # Creates access points for application-specific file system access
 
 module "efs_access_point" {
-  source = "github.com/launchbynttdata/tf-aws-module_primitive-efs_access_point?ref=0.2.0"
+  source  = "terraform.registry.launch.nttdata.com/module_primitive/efs_access_point/aws"
+  version = "~> 0.2"
 
   # Create one access point for each configuration provided
   for_each = var.access_point_configurations

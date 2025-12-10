@@ -12,9 +12,9 @@
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_efs_file_system"></a> [efs\_file\_system](#module\_efs\_file\_system) | github.com/launchbynttdata/tf-aws-module_primitive-efs_file_system | 2.0.0 |
-| <a name="module_efs_mount_target"></a> [efs\_mount\_target](#module\_efs\_mount\_target) | github.com/launchbynttdata/tf-aws-module_primitive-efs_mount_target | 1.0.0 |
-| <a name="module_efs_access_point"></a> [efs\_access\_point](#module\_efs\_access\_point) | github.com/launchbynttdata/tf-aws-module_primitive-efs_access_point | 0.2.0 |
+| <a name="module_efs_file_system"></a> [efs\_file\_system](#module\_efs\_file\_system) | terraform.registry.launch.nttdata.com/module_primitive/efs_file_system/aws | ~> 2.0 |
+| <a name="module_efs_mount_target"></a> [efs\_mount\_target](#module\_efs\_mount\_target) | terraform.registry.launch.nttdata.com/module_primitive/efs_mount_target/aws | ~> 1.0 |
+| <a name="module_efs_access_point"></a> [efs\_access\_point](#module\_efs\_access\_point) | terraform.registry.launch.nttdata.com/module_primitive/efs_access_point/aws | ~> 0.2 |
 
 ## Resources
 
