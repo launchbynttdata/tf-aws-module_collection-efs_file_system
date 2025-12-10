@@ -265,12 +265,12 @@ For simpler usage, see:
 | [aws_vpc.complete](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/vpc) | resource |
 | [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
 | [aws_caller_identity.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/caller_identity) | data source |
-| [aws_region.current](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/region) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_aws_region"></a> [aws\_region](#input\_aws\_region) | The AWS region where resources will be created | `string` | `"us-east-1"` | no |
 | <a name="input_logical_product_family"></a> [logical\_product\_family](#input\_logical\_product\_family) | Logical product family for the resource naming module | `string` | n/a | yes |
 | <a name="input_logical_product_service"></a> [logical\_product\_service](#input\_logical\_product\_service) | Logical product service for the resource naming module | `string` | n/a | yes |
 | <a name="input_environment"></a> [environment](#input\_environment) | Environment name (e.g., dev, staging, prod) | `string` | n/a | yes |
@@ -333,6 +333,10 @@ For simpler usage, see:
 | <a name="output_access_point_posix_users"></a> [access\_point\_posix\_users](#output\_access\_point\_posix\_users) | Map of access point names to POSIX user configurations |
 | <a name="output_access_point_root_directories"></a> [access\_point\_root\_directories](#output\_access\_point\_root\_directories) | Map of access point names to root directory configurations |
 | <a name="output_access_point_tags"></a> [access\_point\_tags](#output\_access\_point\_tags) | Map of access point names to their tags |
+| <a name="output_all_resource_arns"></a> [all\_resource\_arns](#output\_all\_resource\_arns) | Combined list of all resource ARNs created by the EFS collection |
+| <a name="output_connection_info"></a> [connection\_info](#output\_connection\_info) | Connection information for mounting the EFS file system |
+| <a name="output_mount_command"></a> [mount\_command](#output\_mount\_command) | Example mount command for mounting the EFS file system |
+| <a name="output_mount_command_with_efs_utils"></a> [mount\_command\_with\_efs\_utils](#output\_mount\_command\_with\_efs\_utils) | Example mount command using efs-utils helper |
 | <a name="output_burst_credit_alarm_arn"></a> [burst\_credit\_alarm\_arn](#output\_burst\_credit\_alarm\_arn) | ARN of the burst credit balance alarm (if created) |
 | <a name="output_client_connections_alarm_arn"></a> [client\_connections\_alarm\_arn](#output\_client\_connections\_alarm\_arn) | ARN of the client connections alarm |
 | <a name="output_deployment_info"></a> [deployment\_info](#output\_deployment\_info) | Summary of the deployed EFS configuration |

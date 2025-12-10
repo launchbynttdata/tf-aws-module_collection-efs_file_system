@@ -27,7 +27,7 @@ locals {
   subnet_configs_with_full_az = [
     for config in var.subnet_configs : {
       cidr_block        = config.cidr_block
-      availability_zone = "${data.aws_region.current.name}${config.az_letter}"
+      availability_zone = "${var.aws_region}${config.az_letter}"
       az_letter         = config.az_letter
     }
   ]

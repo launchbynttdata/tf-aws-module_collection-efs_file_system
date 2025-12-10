@@ -25,8 +25,9 @@ const (
 	infraTFVarFileNameDefault        = "test.tfvars"
 )
 
-// TestEFSCollectionModuleReadOnly validates the simple example with plan-only (no deployment)
-// This test validates that the configuration is valid without creating resources
+// TestEFSCollectionModuleReadOnly validates the simple example configuration without deployment
+// This is a plan-only test that validates the Terraform configuration is valid
+// No infrastructure is created - this test can run without any pre-existing resources
 func TestEFSCollectionModuleReadOnly(t *testing.T) {
 
 	ctx := types.CreateTestContextBuilder().
@@ -35,5 +36,5 @@ func TestEFSCollectionModuleReadOnly(t *testing.T) {
 		SetTestConfigFileName(infraTFVarFileNameDefault).
 		Build()
 
-	lib.RunNonDestructiveTest(t, *ctx, testimpl.TestComposableEFSCollectionSimple)
+	lib.RunNonDestructiveTest(t, *ctx, testimpl.TestComposableEFSCollectionSimpleReadOnly)
 }

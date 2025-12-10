@@ -185,6 +185,30 @@ output "access_point_tags" {
 }
 
 # ========================================
+# Aggregated Outputs
+# ========================================
+
+output "all_resource_arns" {
+  description = "Combined list of all resource ARNs created by the EFS collection"
+  value       = module.efs.all_resource_arns
+}
+
+output "connection_info" {
+  description = "Connection information for mounting the EFS file system"
+  value       = module.efs.connection_info
+}
+
+output "mount_command" {
+  description = "Example mount command for mounting the EFS file system"
+  value       = module.efs.mount_command
+}
+
+output "mount_command_with_efs_utils" {
+  description = "Example mount command using efs-utils helper"
+  value       = module.efs.mount_command_with_efs_utils
+}
+
+# ========================================
 # CloudWatch Alarm Outputs
 # ========================================
 

@@ -7,7 +7,7 @@ logical_product_service = "efs"
 environment             = "prod"
 instance_env            = 0
 instance_resource       = 0
-region                  = "us-west-2"
+aws_region              = "us-west-2"
 
 # ========================================
 # VPC and Networking

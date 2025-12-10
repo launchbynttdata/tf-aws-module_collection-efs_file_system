@@ -24,8 +24,6 @@ data "aws_availability_zones" "available" {
 
 data "aws_caller_identity" "current" {}
 
-data "aws_region" "current" {}
-
 # ========================================
 # Resource Naming Module
 # ========================================
@@ -35,7 +33,7 @@ module "resource_names" {
 
   logical_product_family  = var.logical_product_family
   logical_product_service = var.logical_product_service
-  region                  = data.aws_region.current.name
+  region                  = var.aws_region
   class_env               = var.environment
   cloud_resource_type     = "efs"
   separator               = "-"
@@ -88,7 +86,7 @@ resource "aws_subnet" "one_zone" {
 
   vpc_id            = aws_vpc.complete.id
   cidr_block        = cidrsubnet(var.vpc_cidr_block, 8, 100)
-  availability_zone = var.one_zone_availability_zone != null ? var.one_zone_availability_zone : "${data.aws_region.current.name}a"
+  availability_zone = var.one_zone_availability_zone != null ? var.one_zone_availability_zone : "${var.aws_region}a"
 
   tags = merge(
     local.common_tags,
@@ -193,7 +191,7 @@ resource "aws_kms_key_policy" "efs" {
         Resource = "*"
         Condition = {
           StringEquals = {
-            "kms:ViaService" = "elasticfilesystem.${data.aws_region.current.name}.amazonaws.com"
+            "kms:ViaService" = "elasticfilesystem.${var.aws_region}.amazonaws.com"
           }
         }
       }

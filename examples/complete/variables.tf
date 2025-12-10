@@ -14,6 +14,12 @@
 # Resource Naming Module Variables
 # ========================================
 
+variable "aws_region" {
+  description = "The AWS region where resources will be created"
+  type        = string
+  default     = "us-east-1"
+}
+
 variable "logical_product_family" {
   description = "Logical product family for the resource naming module"
   type        = string
