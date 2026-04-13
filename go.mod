@@ -16,7 +16,7 @@ require (
 	filippo.io/edwards25519 v1.1.1 // indirect
 	github.com/agext/levenshtein v1.2.3 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
-	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.4 // indirect
+	github.com/aws/aws-sdk-go-v2/aws/protocol/eventstream v1.7.8 // indirect
 	github.com/aws/aws-sdk-go-v2/credentials v1.19.13 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/ec2/imds v1.18.21 // indirect
 	github.com/aws/aws-sdk-go-v2/feature/s3/manager v1.20.15 // indirect
@@ -26,7 +26,7 @@ require (
 	github.com/aws/aws-sdk-go-v2/internal/v4a v1.4.16 // indirect
 	github.com/aws/aws-sdk-go-v2/service/acm v1.37.18 // indirect
 	github.com/aws/aws-sdk-go-v2/service/autoscaling v1.62.4 // indirect
-	github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs v1.62.2 // indirect
+	github.com/aws/aws-sdk-go-v2/service/cloudwatchlogs v1.65.0 // indirect
 	github.com/aws/aws-sdk-go-v2/service/dynamodb v1.53.5 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ec2 v1.276.1 // indirect
 	github.com/aws/aws-sdk-go-v2/service/ecr v1.54.4 // indirect
